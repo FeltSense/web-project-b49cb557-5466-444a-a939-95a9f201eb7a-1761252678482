@@ -1,9 +1,60 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, FormEvent } from 'react'
 
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null
+    message: string
+  }>({ type: null, message: '' })
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitStatus({ type: null, message: '' })
+
+    const form = e.currentTarget as HTMLFormElement
+    
+    const formData = {
+      name: (form.querySelector('#name') as HTMLInputElement).value,
+      email: (form.querySelector('#email') as HTMLInputElement).value,
+      phone: (form.querySelector('#phone') as HTMLInputElement).value,
+      company: (form.querySelector('#company') as HTMLInputElement).value,
+      budget: (form.querySelector('#budget') as HTMLSelectElement).value,
+      service: (form.querySelector('#service') as HTMLSelectElement).value,
+      source: 'Imaginary Space Contact Form',
+      submittedAt: new Date().toISOString(),
+    }
+
+    try {
+      const response = await fetch('https://deep-api-server-2moiw.kinsta.app/api/form-submissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Submission failed')
+      }
+
+      setSubmitStatus({
+        type: 'success',
+        message: 'Thanks for joining! We\'ll be in touch soon.',
+      })
+      form.reset()
+    } catch (error) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Something went wrong. Please try again.',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <main className="min-h-screen bg-white">
@@ -48,7 +99,7 @@ export default function HomePage() {
           className="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-all duration-300"
           onClick={() => {
             const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
+            if (menu) menu.classList.toggle('hidden');
           }}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +190,7 @@ export default function HomePage() {
         </span>
         <br />
         <span className="inline-block animate-fade-in-up animation-delay-200 text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#8B5FBF] to-[#6B3FA0]">
-          Your Brand's
+          Your Brand&apos;s
         </span>
         <br />
         <span className="inline-block animate-fade-in-up animation-delay-400 text-transparent bg-clip-text bg-gradient-to-r from-[#A87FD9] via-[#00D9FF] to-[#E3D0F9]">
@@ -305,7 +356,7 @@ export default function HomePage() {
         </div>
         <h3 className="text-2xl font-bold text-gray-900 mb-4">Proven ROI Results</h3>
         <p className="text-gray-600 mb-6 leading-relaxed">
-          Imaginary Space's marketing AI solutions deliver measurable results with proven track records across campaigns.
+          Imaginary Space&apos;s marketing AI solutions deliver measurable results with proven track records across campaigns.
         </p>
         <div className="space-y-6">
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-5">
@@ -428,7 +479,7 @@ export default function HomePage() {
           </svg>
         </div>
         <p className="text-gray-700 leading-relaxed mb-3">
-          We've tried every marketing platform out there. Imaginary Space is the only one that actually delivers on its promises. ROI increased by 215% and our team loves the intuitive interface. Worth every penny! 💯
+          We&apos;ve tried every marketing platform out there. Imaginary Space is the only one that actually delivers on its promises. ROI increased by 215% and our team loves the intuitive interface. Worth every penny! 💯
         </p>
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <span>11:22 AM · Mar 14, 2024</span>
@@ -476,7 +527,7 @@ export default function HomePage() {
           </svg>
         </div>
         <p className="text-gray-700 leading-relaxed mb-3">
-          Imaginary Space's A/B testing capabilities are unmatched. We optimized our campaigns and saw conversion rates double within 6 weeks. 📈
+          Imaginary Space&apos;s A/B testing capabilities are unmatched. We optimized our campaigns and saw conversion rates double within 6 weeks. 📈
         </p>
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <span>9:45 AM · Mar 12, 2024</span>
@@ -524,7 +575,7 @@ export default function HomePage() {
           </svg>
         </div>
         <p className="text-gray-700 leading-relaxed mb-3">
-          The real-time reporting in Imaginary Space gives us the agility we need in today's fast-paced market. We can pivot campaigns instantly based on data. Game changer! 🎯
+          The real-time reporting in Imaginary Space gives us the agility we need in today&apos;s fast-paced market. We can pivot campaigns instantly based on data. Game changer! 🎯
         </p>
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <span>3:50 PM · Mar 10, 2024</span>
@@ -569,7 +620,7 @@ export default function HomePage() {
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mt-1">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
           <div>
@@ -581,7 +632,7 @@ export default function HomePage() {
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mt-1">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
           <div>
@@ -593,7 +644,7 @@ export default function HomePage() {
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mt-1">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
           <div>
@@ -605,7 +656,7 @@ export default function HomePage() {
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mt-1">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
           <div>
@@ -617,7 +668,7 @@ export default function HomePage() {
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mt-1">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
           <div>
@@ -639,19 +690,19 @@ export default function HomePage() {
       <div className="flex items-center justify-center gap-6 text-sm text-gray-600 flex-wrap">
         <div className="flex items-center gap-2">
           <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
           </svg>
           <span className="font-medium">Secure SSL Payment</span>
         </div>
         <div className="flex items-center gap-2">
           <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
           </svg>
           <span className="font-medium">Powered by Stripe</span>
         </div>
         <div className="flex items-center gap-2">
           <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
           </svg>
           <span className="font-medium">Money-Back Guarantee</span>
         </div>
@@ -666,59 +717,7 @@ export default function HomePage() {
 </section>
       
       {/* Contact Form - Supabase Integration */}
-      <{
-    type: 'success' | 'error' | null;
-    message: string;
-  }>({ type: null, message: '' });
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus({ type: null, message: '' });
-
-    const form = e.currentTarget as HTMLFormElement;
-    
-    const formData = {
-      name: (form.querySelector('#name') as HTMLInputElement).value,
-      email: (form.querySelector('#email') as HTMLInputElement).value,
-      phone: (form.querySelector('#phone') as HTMLInputElement).value,
-      company: (form.querySelector('#company') as HTMLInputElement).value,
-      budget: (form.querySelector('#budget') as HTMLSelectElement).value,
-      service: (form.querySelector('#service') as HTMLSelectElement).value,
-      source: 'Imaginary Space Contact Form',
-      submittedAt: new Date().toISOString(),
-    };
-
-    try {
-      const response = await fetch('https://deep-api-server-2moiw.kinsta.app/api/form-submissions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Submission failed');
-      }
-
-      setSubmitStatus({
-        type: 'success',
-        message: 'Thanks for joining! We\'ll be in touch soon.',
-      });
-      form.reset();
-    } catch (error) {
-      setSubmitStatus({
-        type: 'error',
-        message: 'Something went wrong. Please try again.',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 px-4 py-20">
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 px-4 py-20">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -777,161 +776,3 @@ export default function HomePage() {
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               />
             </div>
-
-            <div>
-              <input
-                type="text"
-                id="company"
-                name="company"
-                required
-                placeholder="Company Name"
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-              />
-            </div>
-
-            <div>
-              <select
-                id="service"
-                name="service"
-                required
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-              >
-                <option value="" className="bg-slate-900">Service Interest</option>
-                <option value="brand-strategy" className="bg-slate-900">Brand Strategy</option>
-                <option value="digital-marketing" className="bg-slate-900">Digital Marketing</option>
-                <option value="content-creation" className="bg-slate-900">Content Creation</option>
-                <option value="social-media" className="bg-slate-900">Social Media Management</option>
-                <option value="seo-sem" className="bg-slate-900">SEO & SEM</option>
-              </select>
-            </div>
-
-            <div>
-              <select
-                id="budget"
-                name="budget"
-                required
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-              >
-                <option value="" className="bg-slate-900">Monthly Budget</option>
-                <option value="5k-10k" className="bg-slate-900">$5K - $10K</option>
-                <option value="10k-25k" className="bg-slate-900">$10K - $25K</option>
-                <option value="25k-50k" className="bg-slate-900">$25K - $50K</option>
-                <option value="50k+" className="bg-slate-900">$50K+</option>
-              </select>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
-            >
-              {isSubmitting ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Joining...
-                </span>
-              ) : (
-                'Secure My Spot'
-              )}
-            </button>
-
-            {submitStatus.type && (
-              <div
-                className={`p-4 rounded-xl text-sm text-center ${
-                  submitStatus.type === 'success'
-                    ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                    : 'bg-red-500/20 text-red-300 border border-red-500/30'
-                }`}
-              >
-                {submitStatus.message}
-              </div>
-            )}
-          </form>
-
-          <p className="text-slate-400 text-xs text-center mt-6">
-            Join 2,500+ marketers already on the waitlist
-          </p>
-        </div>
-
-        {/* Trust indicators */}
-        <div className="flex items-center justify-center gap-6 mt-8 text-slate-400 text-xs">
-          <div className="flex items-center gap-1">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-            </svg>
-            <span>Secure</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>No spam</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-            </svg>
-            <span>Early access</span>
-          </div>
-        </div>
-      </div>
-    </section>
-      
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex flex-col items-center space-y-8">
-      {/* Logo */}
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-white">Imaginary Space</h2>
-        <p className="mt-2 text-sm text-gray-400">Creative Marketing Solutions</p>
-      </div>
-
-      {/* Contact Info */}
-      <div className="flex flex-col items-center space-y-2 text-sm">
-        <a href="mailto:hello@imaginaryspace.com" className="hover:text-white transition-colors">
-          hello@imaginaryspace.com
-        </a>
-        <a href="tel:+1-555-123-4567" className="hover:text-white transition-colors">
-          +1 (555) 123-4567
-        </a>
-      </div>
-
-      {/* Social Links */}
-      <div className="flex items-center space-x-6">
-        <a href="https://facebook.com" className="hover:text-white transition-colors" aria-label="Facebook">
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-        </a>
-        <a href="https://twitter.com" className="hover:text-white transition-colors" aria-label="Twitter">
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-          </svg>
-        </a>
-        <a href="https://linkedin.com" className="hover:text-white transition-colors" aria-label="LinkedIn">
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-          </svg>
-        </a>
-        <a href="https://instagram.com" className="hover:text-white transition-colors" aria-label="Instagram">
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/>
-          </svg>
-        </a>
-      </div>
-
-      {/* Copyright */}
-      <div className="text-center text-sm text-gray-400 pt-4 border-t border-gray-800 w-full">
-        <p>&copy; {new Date().getFullYear()} Imaginary Space. All rights reserved.</p>
-      </div>
-    </div>
-  </div>
-</footer>
-    </main>
-  )
-}
